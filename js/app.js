@@ -11,7 +11,8 @@ import {
 } from "./voice.js";
 
 const SPLASH_MS = 1100;
-const LILA_FACE = "icons/lila-avatar.svg";
+const DEFAULT_AVATAR = "icons/mika-avatar.jpg";
+const DEFAULT_PORTRAIT = "icons/mika-portrait.jpg";
 
 const $ = (id) => document.getElementById(id);
 
@@ -37,9 +38,17 @@ function navShow(name) {
   } catch (_) {}
 }
 
+function faceSrc() {
+  return character?.avatar || DEFAULT_AVATAR;
+}
+
+function portraitSrc() {
+  return character?.portrait || DEFAULT_PORTRAIT;
+}
+
 function faceImg(className) {
   const img = document.createElement("img");
-  img.src = LILA_FACE;
+  img.src = faceSrc();
   img.alt = "";
   img.className = className;
   img.setAttribute("aria-hidden", "true");
@@ -51,6 +60,8 @@ function fillIntro() {
   $("intro-name").textContent = character.display_name;
   $("intro-role").textContent = character.role_tag || "";
   $("intro-one-liner").textContent = character.one_liner || "";
+  const bioEl = $("intro-bio");
+  if (bioEl) bioEl.textContent = character.bio || "";
   $("chat-name").textContent = character.display_name;
   $("typing-label").textContent = `${first} is typing…`;
   $("composer-input").placeholder = `Message ${first}…`;
@@ -58,9 +69,11 @@ function fillIntro() {
 
   introAvatarFrame = mountAvatar($("intro-avatar-stage"), {
     name: first,
+    portrait: portraitSrc(),
   });
   chatAvatarFrame = mountAvatar($("chat-avatar-stage"), {
     name: first,
+    portrait: portraitSrc(),
   });
   setAvatarState(introAvatarFrame, "idle");
   setAvatarState(chatAvatarFrame, "idle");
@@ -77,7 +90,7 @@ function appendMessage(role, text) {
   row.className = `msg-row msg-row--${role === "user" ? "user" : "char"}`;
 
   if (role !== "user") {
-    row.appendChild(faceImg("lila-face lila-face--sm"));
+    row.appendChild(faceImg("mika-face mika-face--sm"));
   }
 
   const bubble = document.createElement("div");
@@ -169,20 +182,19 @@ async function sendMessage(text) {
   }
 }
 
+/**
+ * Intro ← : confirm then end the PWA session.
+ * Do NOT early-return on history.back() — standalone Android often has
+ * nowhere to go, which made Back look like a no-op.
+ */
 function exitApp() {
   const ok = window.confirm("Leave Sunburst City?");
   if (!ok) return;
   stopSpeaking();
   try {
-    if (window.history.length > 1) {
-      window.history.back();
-      return;
-    }
-  } catch (_) {}
-  try {
     window.close();
   } catch (_) {}
-  // PWA / tab often can't close — show a calm end state instead of splash loop
+  // PWA / tab often can't close — show a calm end state instead of looping
   document.body.innerHTML =
     '<div style="min-height:100dvh;display:grid;place-items:center;background:#001a4d;color:#f2f6ff;font:600 1.05rem system-ui;text-align:center;padding:24px">You can close this tab or swipe the app away.</div>';
 }
@@ -265,19 +277,22 @@ async function boot() {
   bindUI();
   try {
     const pack = await loadCharacterPack();
-    character = getCharacter(pack, "lila_solano");
+    character = getCharacter(pack, "mika");
     if (!character) throw new Error("No character");
     fillIntro();
   } catch (err) {
     console.error(err);
     character = {
-      id: "lila_solano",
-      display_name: "Lila Solano",
-      role_tag: "Local · photographer",
-      one_liner: "Sunburst local. Start chatting anytime.",
-      starter_greetings: ["Hey — Lila here. You free for a bit?"],
-      system_prompt: "You are Lila Solano in Sunburst City.",
-      bio: "A friendly Sunburst City photographer.",
+      id: "mika",
+      display_name: "Mika",
+      role_tag: "Sunburst local",
+      one_liner:
+        "The person you talk to in Sunburst City — calm, grounded, always around when you need a real conversation.",
+      starter_greetings: ["Hey. It’s Mika. Got a minute — or a longer one?"],
+      system_prompt: "You are Mika in Sunburst City.",
+      bio: "Mika lives in the easy rhythm of Sunburst City.",
+      portrait: DEFAULT_PORTRAIT,
+      avatar: DEFAULT_AVATAR,
     };
     fillIntro();
   }

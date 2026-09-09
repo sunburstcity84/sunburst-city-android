@@ -1,7 +1,7 @@
 {
   "name": "Sunburst City",
   "short_name": "Sunburst",
-  "description": "Chat with Lila Solano in Sunburst City — tropical-urban AI companion.",
+  "description": "Chat with Mika in Sunburst City — tropical-urban AI companion.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

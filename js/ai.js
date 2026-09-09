@@ -41,102 +41,98 @@ function delay(ms) {
   return new Promise((r) => setTimeout(r, ms));
 }
 
-/** Heuristic local replies that stay in Lila's voice */
+/** Heuristic local replies in Mika's grounded voice */
 function mockReply(character, userText) {
   const t = (userText || "").toLowerCase().trim();
   const name = character.display_name.split(" ")[0];
   const landmarks = [
-    "the palm promenade",
-    "a quiet café two blocks off the boardwalk",
-    "NMS Tower catching late sun",
-    "the beachfront glass skyline",
-    "golden-hour light on downtown",
+    "palm shade near the promenade",
+    "a quiet café off the boardwalk",
+    "late sun on the glass skyline",
+    "the beach with the towers in the distance",
+    "a soft breeze downtown",
   ];
 
   const openers = [
     "Hey —",
-    "Okay so —",
+    "Mm.",
+    "Yeah.",
+    "Okay.",
     "Honestly?",
-    "Love that.",
-    "Ha —",
-    "Mm,",
+    "Got it.",
   ];
 
   if (/^(hi|hey|hello|yo|sup|hola)\b/.test(t) || t.length < 3) {
     return pick(
-      character.starter_greetings || [`Hey — ${name} here. What's good?`]
+      character.starter_greetings || [`Hey. It’s ${name}. What’s on your mind?`]
     );
   }
 
-  if (/photo|shoot|camera|picture|pic/.test(t)) {
+  if (/beach|sand|ocean|wave|swim|boardwalk|palm/.test(t)) {
     return pick([
-      `Photography brain activated. ${pick(landmarks)} is calling my name right now. What kind of shot are you chasing?`,
-      `If you're asking for photo tips — golden hour here is unfairly pretty. Want a quiet corner or full skyline drama?`,
-      `I just wrapped a shoot by the palms. Tell me your vibe and I'll mentally frame it.`,
-    ]);
-  }
-
-  if (/beach|sand|ocean|wave|swim|boardwalk/.test(t)) {
-    return pick([
-      `Beach first, always — salt in the air, soft waves, skyline peeking behind the palms. You more sunrise or sunset person?`,
-      `Boardwalk energy today feels perfect. There's a quieter stretch if you want less crowds. Coming with?`,
-      `Ocean breeze + café noise is my favorite combo. What's pulling you toward the water?`,
+      `Beach day’s always easy here — salt air, soft waves, skyline peeking through the palms. Sunrise or sunset person?`,
+      `I like the quieter stretch when the boardwalk gets loud. You wanting water, or just the breeze?`,
+      `Ocean’s calm today. What’s pulling you toward it?`,
     ]);
   }
 
   if (/café|cafe|coffee|drink|food|eat|lunch|dinner/.test(t)) {
     return pick([
-      `I know a quieter café two blocks from the boardwalk — soft light, good iced drinks, zero tourist rush. Want the mental map?`,
-      `Food mission accepted. Beach-adjacent or downtown glass-and-neon? I'll match the vibe.`,
-      `Coffee first, then we negotiate beach vs skyline. Deal?`,
+      `There’s a quieter café a couple blocks off the boardwalk — soft light, decent iced drinks. Want that vibe or something closer to downtown?`,
+      `Food mission. Beach-adjacent or glass-and-neon? I’ll match whatever you’re in the mood for.`,
+      `Coffee first, then we figure out the rest. Deal?`,
     ]);
   }
 
   if (/tower|nms|skyline|downtown|city/.test(t)) {
     return pick([
-      `NMS Tower in late sun is basically cheating for photos. Downtown glass just… glows. You exploring or people-watching?`,
-      `Skyline nights here go soft neon after rain. Forever-summer days, warm nights — hard to pick a favorite. Yours?`,
-      `Sunburst downtown is vacation ease meets big-city ambition. What corner should we claim?`,
+      `Late sun on the glass downtown is unfairly pretty. Exploring or just people-watching?`,
+      `Skyline nights go soft after a warm day. Forever-summer makes picking a favorite hard. Yours?`,
+      `Downtown’s vacation ease meets big-city pace. Which corner feels right today?`,
     ]);
   }
 
   if (/how are you|how's it|how r u|whats up|what's up/.test(t)) {
     return pick([
-      `Pretty good — catching the last gold on the skyline and pretending my to-do list doesn't exist. You free for a bit?`,
-      `Warm breeze, camera bag half-zipped, mood: optimistic. Tell me something good about your day.`,
-      `I'm floating between shoot and café. Perfect window for a chat — how's your day looking?`,
+      `Pretty steady — warm light, nowhere urgent to be. You free for a bit?`,
+      `Quiet stretch of the day. Mood: grounded. Tell me something small about yours.`,
+      `I’m around. Perfect window for a real conversation — how’s your day looking?`,
     ]);
   }
 
   if (/who are you|your name|about you|tell me about/.test(t)) {
+    const bio = character.bio || "";
+    const short = bio
+      ? bio.split(". ").slice(0, 2).join(". ")
+      : `I’m ${name}. I live here in Sunburst.`;
     return (
-      character.bio?.split(". ").slice(0, 2).join(". ") +
-      ". Anyway — enough about me. What's your Sunburst mood today?"
+      short +
+      ". Anyway — enough about me. What’s on your mind?"
     );
   }
 
   if (/flirt|cute|pretty|beautiful|date|love you|hot/.test(t)) {
     return pick([
-      `Careful — sunsets here already do enough damage. Keep talking though; I like the energy.`,
-      `That's sweet. I'll take the compliment and raise you a golden-hour walk. No pressure — just good light.`,
-      `Noted, playfully filed. Now tell me something real — beach or downtown first?`,
+      `That’s sweet. I’ll take it quietly. Keep talking — I like the energy.`,
+      `Noted, low-key. No pressure. Want company for a walk or just the chat?`,
+      `Appreciate that. Now tell me something real — beach or downtown mood?`,
     ]);
   }
 
   if (/\?$/.test(t)) {
     return pick([
-      `${pick(openers)} I'd say ${pick(landmarks)} is a solid answer — but give me a little more of what you're aiming for?`,
-      `Good question. Short version: Sunburst rewards curiosity. Want my local take or the tourist-gloss version?`,
-      `Hmm. My honest answer leans beachy and optimistic. What's driving the question — planning or daydreaming?`,
+      `${pick(openers)} I’d lean toward ${pick(landmarks)} — but give me a little more of what you’re aiming for?`,
+      `Good question. Short version: Sunburst rewards unhurried curiosity. Want my local take?`,
+      `Hmm. Honest answer stays calm and optimistic. Planning or daydreaming?`,
     ]);
   }
 
   const snippets = userText.trim().slice(0, 40);
   return pick([
     `${pick(openers)} "${snippets}${userText.length > 40 ? "…" : ""}" — that paints a picture. Reminds me of ${pick(landmarks)}. What happened next?`,
-    `I'm with you on that. Sunburst has this way of making ordinary moments feel like a frame worth keeping. Want to dig into it or switch scenery?`,
-    `${pick(openers)} sounds like a whole mood. I've got time — beach air, soft light, no rush. Tell me more?`,
-    `Okay I like where this is going. Keep it coming — and if you need a local tip mid-story, I'm right here.`,
+    `I’m with you on that. This city has a way of making ordinary moments feel worth keeping. Dig in, or switch scenery?`,
+    `${pick(openers)} sounds like a whole mood. I’ve got time — breeze, soft light, no rush. Tell me more?`,
+    `Okay. I like where this is going. Keep it coming — I’m right here.`,
   ]);
 }
 

@@ -1,6 +1,6 @@
 # Sunburst City — Android AI Chat
 
-Portrait phone chat with **Lila Solano**: animated character + text chat + spoken replies (free Web Speech).
+Portrait phone chat with **Mika**: animated character + text chat + spoken replies (free Web Speech).
 
 Repo: https://github.com/sunburstcity84/sunburst-city-android
 
@@ -8,9 +8,9 @@ Live: https://sunburstcity84.github.io/sunburst-city-android/
 
 ## What you get
 
-1. **Character** — Lila from `data/character-pack.json`
+1. **Character** — Mika from `data/character-pack.json` (Chris’s portrait art)
 2. **Conversation** — portrait text chat
-3. **Animated person** — idle / talking avatar; her replies auto-speak after you tap **Start chatting**
+3. **Animated person** — idle breathe/sway on her portrait; stronger motion while she speaks after you tap **Start chatting**
 
 Mute via the **Speak** checkbox in the chat top bar if needed.
 
@@ -22,9 +22,11 @@ Mute via the **Speak** checkbox in the chat top bar if needed.
 
 ## Try animate + speak
 
-1. Open the app → wait for splash → meet Lila
+1. Open the app → wait for splash → meet Mika
 2. Tap **Start chatting** (unlocks device speech)
-3. Type a message → she replies in text, speaks aloud, and the avatar switches to talking motion
+3. Type a message → she replies in text, speaks aloud, and the portrait switches to talking motion
+
+On the intro screen, **←** asks to leave (confirm exit). From chat, **←** returns to intro.
 
 Voice quality depends on the Android/Chrome built-in voices (no paid TTS API). Some devices have better female voices than others. If Speak is muted or speech is unsupported, chat still works.
 

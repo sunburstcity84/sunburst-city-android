@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Sunburst City" />
-  <meta name="description" content="Chat with Lila Solano in Sunburst City — tropical-urban AI companion." />
+  <meta name="description" content="Chat with Mika in Sunburst City — tropical-urban AI companion." />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96.png" />
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
@@ -26,12 +26,13 @@
 
   <!-- Character intro -->
   <section id="screen-intro" class="screen screen--intro hidden" aria-label="Character intro">
-    <button type="button" class="btn-back" id="intro-back" aria-label="Back">←</button>
+    <button type="button" class="btn-back" id="intro-back" aria-label="Leave Sunburst City">←</button>
     <div class="intro-card">
       <div id="intro-avatar-stage" class="intro-avatar-stage" aria-hidden="true"></div>
-      <h1 class="intro-name" id="intro-name">Lila Solano</h1>
-      <p class="intro-role" id="intro-role">Local · photographer · beach–city guide</p>
+      <h1 class="intro-name" id="intro-name">Mika</h1>
+      <p class="intro-role" id="intro-role">Sunburst local</p>
       <p class="intro-one-liner" id="intro-one-liner"></p>
+      <p class="intro-bio" id="intro-bio"></p>
       <button type="button" class="btn-primary" id="btn-start">Start chatting</button>
     </div>
   </section>
@@ -42,7 +43,7 @@
       <button type="button" class="btn-back btn-back--bar" id="chat-back" aria-label="Back to intro">←</button>
       <img src="icons/icon-192.png" alt="" class="topbar-logo" width="32" height="32" />
       <div class="topbar-meta">
-        <span class="topbar-name" id="chat-name">Lila Solano</span>
+        <span class="topbar-name" id="chat-name">Mika</span>
         <span class="topbar-status" id="chat-status">Online</span>
       </div>
       <label class="tts-toggle" title="Speak replies">
@@ -61,7 +62,7 @@
 
     <div class="typing-bar hidden" id="typing-bar" aria-hidden="true">
       <span class="typing-dots"><i></i><i></i><i></i></span>
-      <span id="typing-label">Lila is typing…</span>
+      <span id="typing-label">Mika is typing…</span>
     </div>
 
     <form class="composer" id="composer" autocomplete="off">
@@ -69,7 +70,7 @@
       <textarea
         id="composer-input"
         rows="1"
-        placeholder="Message Lila…"
+        placeholder="Message Mika…"
         enterkeyhint="send"
         maxlength="2000"
       ></textarea>

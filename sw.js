@@ -1,5 +1,5 @@
 /* Sunburst City PWA service worker — cache shell for offline installability */
-const CACHE = "sunburst-v2";
+const CACHE = "sunburst-v3-mika";
 const ASSETS = [
   "./",
   "./index.html",
@@ -16,7 +16,8 @@ const ASSETS = [
   "./icons/logo.png",
   "./icons/apple-touch-icon.png",
   "./icons/favicon-96.png",
-  "./icons/lila-avatar.svg",
+  "./icons/mika-portrait.jpg",
+  "./icons/mika-avatar.jpg",
 ];
 
 self.addEventListener("install", (event) => {

@@ -8,7 +8,7 @@ export async function loadCharacterPack() {
   return packCache;
 }
 
-export function getCharacter(pack, id = "lila_solano") {
+export function getCharacter(pack, id = "mika") {
   const list = pack?.characters || [];
   return list.find((c) => c.id === id) || list[0] || null;
 }
