@@ -28,7 +28,7 @@
   <section id="screen-intro" class="screen screen--intro hidden" aria-label="Character intro">
     <button type="button" class="btn-back" id="intro-back" aria-label="Back">←</button>
     <div class="intro-card">
-      <div class="intro-avatar" id="intro-avatar" aria-hidden="true">LS</div>
+      <div id="intro-avatar-stage" class="intro-avatar-stage" aria-hidden="true"></div>
       <h1 class="intro-name" id="intro-name">Lila Solano</h1>
       <p class="intro-role" id="intro-role">Local · photographer · beach–city guide</p>
       <p class="intro-one-liner" id="intro-one-liner"></p>
@@ -45,11 +45,16 @@
         <span class="topbar-name" id="chat-name">Lila Solano</span>
         <span class="topbar-status" id="chat-status">Online</span>
       </div>
+      <label class="tts-toggle" title="Speak replies">
+        <input type="checkbox" id="tts-auto" checked />
+        <span>Speak</span>
+      </label>
     </header>
+
+    <div id="chat-avatar-stage" class="chat-avatar-stage" aria-hidden="true"></div>
 
     <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
       <div class="empty-state" id="empty-state">
-        <div class="empty-avatar" id="empty-avatar">LS</div>
         <p class="empty-text">Say hi…</p>
       </div>
     </div>

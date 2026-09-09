@@ -1,7 +1,17 @@
-import { loadCharacterPack, getCharacter, initials } from "./characters.js";
-import { generateReply, getAiStatus } from "./ai.js";
+import { loadCharacterPack, getCharacter } from "./characters.js";
+import { generateReply } from "./ai.js";
+import { mountAvatar, setAvatarState } from "./avatar.js";
+import {
+  initVoice,
+  speak,
+  stopSpeaking,
+  getAutoSpeak,
+  setAutoSpeak,
+  isTtsSupported,
+} from "./voice.js";
 
 const SPLASH_MS = 1100;
+const LILA_FACE = "icons/lila-avatar.svg";
 
 const $ = (id) => document.getElementById(id);
 
@@ -14,6 +24,9 @@ const screens = {
 let character = null;
 let chatHistory = [];
 let busy = false;
+let chatAvatarFrame = null;
+let introAvatarFrame = null;
+let speechUnlocked = false;
 
 function navShow(name) {
   Object.entries(screens).forEach(([k, el]) => {
@@ -24,19 +37,33 @@ function navShow(name) {
   } catch (_) {}
 }
 
-function setAvatarText(el, name) {
-  if (el) el.textContent = initials(name);
+function faceImg(className) {
+  const img = document.createElement("img");
+  img.src = LILA_FACE;
+  img.alt = "";
+  img.className = className;
+  img.setAttribute("aria-hidden", "true");
+  return img;
 }
 
 function fillIntro() {
+  const first = character.display_name.split(" ")[0];
   $("intro-name").textContent = character.display_name;
   $("intro-role").textContent = character.role_tag || "";
   $("intro-one-liner").textContent = character.one_liner || "";
-  setAvatarText($("intro-avatar"), character.display_name);
-  setAvatarText($("empty-avatar"), character.display_name);
   $("chat-name").textContent = character.display_name;
-  $("typing-label").textContent = `${character.display_name.split(" ")[0]} is typing…`;
-  $("composer-input").placeholder = `Message ${character.display_name.split(" ")[0]}…`;
+  $("typing-label").textContent = `${first} is typing…`;
+  $("composer-input").placeholder = `Message ${first}…`;
+  $("chat-status").textContent = "Online";
+
+  introAvatarFrame = mountAvatar($("intro-avatar-stage"), {
+    name: first,
+  });
+  chatAvatarFrame = mountAvatar($("chat-avatar-stage"), {
+    name: first,
+  });
+  setAvatarState(introAvatarFrame, "idle");
+  setAvatarState(chatAvatarFrame, "idle");
 }
 
 function hideEmpty() {
@@ -50,11 +77,7 @@ function appendMessage(role, text) {
   row.className = `msg-row msg-row--${role === "user" ? "user" : "char"}`;
 
   if (role !== "user") {
-    const av = document.createElement("div");
-    av.className = "msg-avatar";
-    av.textContent = initials(character.display_name);
-    av.setAttribute("aria-hidden", "true");
-    row.appendChild(av);
+    row.appendChild(faceImg("lila-face lila-face--sm"));
   }
 
   const bubble = document.createElement("div");
@@ -69,10 +92,11 @@ function appendMessage(role, text) {
 function setTyping(on) {
   $("typing-bar").classList.toggle("hidden", !on);
   $("typing-bar").setAttribute("aria-hidden", on ? "false" : "true");
+  $("chat-status").textContent = on ? "Typing…" : "Online";
   if (on) {
-    $("chat-status").textContent = "Typing…";
-  } else {
-    $("chat-status").textContent = `Online · ${getAiStatus()}`;
+    setAvatarState(chatAvatarFrame, "typing");
+  } else if (!busy) {
+    setAvatarState(chatAvatarFrame, "idle");
   }
 }
 
@@ -81,11 +105,40 @@ function autoGrow(ta) {
   ta.style.height = Math.min(ta.scrollHeight, 120) + "px";
 }
 
+/** One user gesture unlocks speechSynthesis on Android Chrome. */
+function unlockSpeech() {
+  if (speechUnlocked || !isTtsSupported()) {
+    speechUnlocked = true;
+    return;
+  }
+  try {
+    const u = new SpeechSynthesisUtterance(" ");
+    u.volume = 0;
+    speechSynthesis.speak(u);
+    speechSynthesis.cancel();
+  } catch (_) {}
+  speechUnlocked = true;
+}
+
+async function speakReply(text) {
+  if (!getAutoSpeak() || !isTtsSupported()) return;
+  setAvatarState(chatAvatarFrame, "talking");
+  $("chat-status").textContent = "Speaking…";
+  await speak(text, {
+    onEnd: () => {
+      setAvatarState(chatAvatarFrame, "idle");
+      if (!busy) $("chat-status").textContent = "Online";
+    },
+  });
+}
+
 async function sendMessage(text) {
   const cleaned = text.trim();
   if (!cleaned || busy) return;
   busy = true;
   $("btn-send").disabled = true;
+  stopSpeaking();
+  setAvatarState(chatAvatarFrame, "idle");
 
   appendMessage("user", cleaned);
   chatHistory.push({ role: "user", text: cleaned });
@@ -101,6 +154,7 @@ async function sendMessage(text) {
     const finalText = reply || "Hey — signal got fuzzy. Say that again?";
     appendMessage("char", finalText);
     chatHistory.push({ role: "assistant", text: finalText });
+    await speakReply(finalText);
   } catch (err) {
     setTyping(false);
     appendMessage("char", "Whoa, glitchy moment. Try me again?");
@@ -108,28 +162,75 @@ async function sendMessage(text) {
   } finally {
     busy = false;
     $("btn-send").disabled = !$("composer-input").value.trim();
+    if (!isTtsSupported() || !getAutoSpeak() || !speechSynthesis.speaking) {
+      setAvatarState(chatAvatarFrame, "idle");
+      $("chat-status").textContent = "Online";
+    }
   }
+}
+
+function exitApp() {
+  const ok = window.confirm("Leave Sunburst City?");
+  if (!ok) return;
+  stopSpeaking();
+  try {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+  } catch (_) {}
+  try {
+    window.close();
+  } catch (_) {}
+  // PWA / tab often can't close — show a calm end state instead of splash loop
+  document.body.innerHTML =
+    '<div style="min-height:100dvh;display:grid;place-items:center;background:#001a4d;color:#f2f6ff;font:600 1.05rem system-ui;text-align:center;padding:24px">You can close this tab or swipe the app away.</div>';
 }
 
 function bindUI() {
   $("btn-start").addEventListener("click", () => {
+    unlockSpeech();
     navShow("chat");
+    setAvatarState(chatAvatarFrame, "idle");
     $("composer-input").focus();
   });
 
-  $("intro-back").addEventListener("click", () => {
-    navShow("splash");
-    setTimeout(() => navShow("intro"), 400);
+  $("intro-back").addEventListener("click", exitApp);
+
+  $("chat-back").addEventListener("click", () => {
+    stopSpeaking();
+    setAvatarState(chatAvatarFrame, "idle");
+    navShow("intro");
+    setAvatarState(introAvatarFrame, "idle");
   });
 
-  $("chat-back").addEventListener("click", () => navShow("intro"));
-
   window.addEventListener("popstate", () => {
-    if (!screens.chat.classList.contains("hidden")) navShow("intro");
+    if (!screens.chat.classList.contains("hidden")) {
+      stopSpeaking();
+      navShow("intro");
+    }
   });
 
   const input = $("composer-input");
   const sendBtn = $("btn-send");
+  const tts = $("tts-auto");
+
+  if (tts) {
+    tts.checked = getAutoSpeak();
+    if (!isTtsSupported()) {
+      tts.checked = false;
+      tts.disabled = true;
+      tts.parentElement.title = "Speech not supported on this browser";
+    }
+    tts.addEventListener("change", () => {
+      setAutoSpeak(tts.checked);
+      if (!tts.checked) {
+        stopSpeaking();
+        setAvatarState(chatAvatarFrame, "idle");
+        $("chat-status").textContent = "Online";
+      }
+    });
+  }
 
   input.addEventListener("input", () => {
     sendBtn.disabled = !input.value.trim() || busy;
@@ -160,13 +261,13 @@ function bindUI() {
 }
 
 async function boot() {
+  initVoice();
   bindUI();
   try {
     const pack = await loadCharacterPack();
     character = getCharacter(pack, "lila_solano");
     if (!character) throw new Error("No character");
     fillIntro();
-    $("chat-status").textContent = `Online · ${getAiStatus()}`;
   } catch (err) {
     console.error(err);
     character = {

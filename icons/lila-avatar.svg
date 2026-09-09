@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Lila Solano">
+  <defs>
+    <linearGradient id="sk" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5c9a8"/><stop offset="100%" stop-color="#e8a87c"/>
+    </linearGradient>
+    <linearGradient id="hr" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3d2314"/><stop offset="55%" stop-color="#1a0f08"/><stop offset="100%" stop-color="#5c3a1e"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0070ff"/><stop offset="100%" stop-color="#ffc933"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+  <ellipse cx="100" cy="88" rx="58" ry="64" fill="url(#hr)"/>
+  <ellipse cx="100" cy="98" rx="46" ry="52" fill="url(#sk)"/>
+  <path d="M42 100 Q35 145 48 175 Q55 150 58 125 Z" fill="url(#hr)"/>
+  <path d="M158 100 Q165 145 152 175 Q145 150 142 125 Z" fill="url(#hr)"/>
+  <path d="M55 65 Q100 28 145 65 Q130 82 100 74 Q70 82 55 65 Z" fill="url(#hr)"/>
+  <circle cx="68" cy="110" r="9" fill="#ff8fab" opacity="0.45"/>
+  <circle cx="132" cy="110" r="9" fill="#ff8fab" opacity="0.45"/>
+  <ellipse cx="80" cy="98" rx="8" ry="9" fill="#1a2748"/>
+  <ellipse cx="120" cy="98" rx="8" ry="9" fill="#1a2748"/>
+  <circle cx="77" cy="94" r="2.4" fill="#fff"/>
+  <circle cx="117" cy="94" r="2.4" fill="#fff"/>
+  <path d="M70 84 Q80 80 90 84" stroke="#2a1810" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M110 84 Q120 80 130 84" stroke="#2a1810" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M100 102 Q102 112 98 114" stroke="#d4926a" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M88 128 Q100 136 112 128" stroke="#c45c6a" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+</svg>

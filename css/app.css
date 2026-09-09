@@ -15,7 +15,7 @@
   --text-dark: #152038;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --composer-h: 64px;
+  --stage-h: 38%;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -128,22 +128,9 @@ body {
   gap: 12px;
 }
 
-.intro-avatar,
-.empty-avatar,
-.msg-avatar {
-  width: 112px;
-  height: 112px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 2rem;
-  color: #fff;
-  background:
-    linear-gradient(145deg, var(--blue) 0%, #4d9fff 40%, var(--gold) 100%);
-  box-shadow: 0 8px 28px rgba(0, 112, 255, 0.35);
-  border: 3px solid rgba(255, 201, 51, 0.55);
-  letter-spacing: 0.02em;
+.intro-avatar-stage {
+  width: min(72vw, 260px);
+  height: min(72vw, 260px);
 }
 
 .intro-name {
@@ -181,6 +168,121 @@ body {
 
 .btn-primary:active { transform: scale(0.98); }
 
+/* —— Shared Lila face (portrait asset) —— */
+.lila-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  background: linear-gradient(145deg, var(--blue), var(--gold));
+  border: 3px solid rgba(255, 201, 51, 0.55);
+  box-shadow: 0 8px 28px rgba(0, 112, 255, 0.35);
+}
+
+.lila-face--sm {
+  width: 32px;
+  height: 32px;
+  border-width: 2px;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+
+/* —— Avatar stage (animated) —— */
+.avatar-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-caption {
+  display: none;
+}
+
+.lila-svg {
+  width: min(100%, 220px);
+  height: auto;
+  max-height: 100%;
+  filter: drop-shadow(0 10px 24px rgba(0, 112, 255, 0.35));
+}
+
+.lila-body {
+  transform-origin: 100px 210px;
+  animation: breathe 3.2s ease-in-out infinite;
+}
+
+.lila-head {
+  transform-origin: 100px 120px;
+  animation: headIdle 4s ease-in-out infinite;
+}
+
+.eyes {
+  transform-origin: 100px 88px;
+  animation: blink 4.8s infinite;
+}
+
+.mouth-talk { opacity: 0; }
+
+.avatar-frame[data-state="talking"] .lila-body {
+  animation: talkBounce 0.45s ease-in-out infinite;
+}
+
+.avatar-frame[data-state="talking"] .lila-head {
+  animation: talkHead 0.35s ease-in-out infinite;
+}
+
+.avatar-frame[data-state="talking"] .mouth-idle { opacity: 0; }
+.avatar-frame[data-state="talking"] .mouth-talk {
+  opacity: 1;
+  animation: mouthOpen 0.28s ease-in-out infinite alternate;
+}
+
+.avatar-frame[data-state="typing"] .lila-head {
+  animation: headIdle 1.6s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-3px) scale(1.015); }
+}
+
+@keyframes headIdle {
+  0%, 100% { transform: rotate(-1.2deg); }
+  50% { transform: rotate(1.4deg); }
+}
+
+@keyframes blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%, 96% { transform: scaleY(0.08); }
+}
+
+@keyframes talkBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-5px) scale(1.03); }
+}
+
+@keyframes talkHead {
+  0%, 100% { transform: rotate(-2deg) translateY(0); }
+  50% { transform: rotate(2.5deg) translateY(-2px); }
+}
+
+@keyframes mouthOpen {
+  from { transform: scaleY(0.55); }
+  to { transform: scaleY(1.15); }
+}
+
 /* —— Chat —— */
 .screen--chat {
   z-index: 10;
@@ -209,6 +311,7 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1;
 }
 
 .topbar-name {
@@ -224,15 +327,48 @@ body {
   color: var(--green);
 }
 
+.tts-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.tts-toggle input {
+  accent-color: var(--gold);
+  width: 16px;
+  height: 16px;
+}
+
+.chat-avatar-stage {
+  flex: 0 0 var(--stage-h);
+  max-height: 42vh;
+  min-height: 140px;
+  background:
+    radial-gradient(ellipse at 50% 70%, rgba(0, 112, 255, 0.22), transparent 60%),
+    linear-gradient(180deg, var(--bg-elevated), var(--bg));
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px 0;
+}
+
 .chat-messages {
   flex: 1;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 16px 12px 8px;
+  padding: 12px 12px 8px;
   display: flex;
   flex-direction: column;
   gap: 10px;
   -webkit-overflow-scrolling: touch;
+  min-height: 0;
 }
 
 .empty-state {
@@ -244,8 +380,6 @@ body {
   gap: 12px;
   opacity: 0.9;
 }
-
-.empty-avatar { width: 72px; height: 72px; font-size: 1.35rem; }
 
 .empty-text {
   color: var(--text-muted);
@@ -271,15 +405,6 @@ body {
 }
 
 .msg-row--char { align-self: flex-start; }
-
-.msg-avatar {
-  width: 32px;
-  height: 32px;
-  font-size: 0.7rem;
-  flex-shrink: 0;
-  border-width: 2px;
-  box-shadow: none;
-}
 
 .bubble {
   padding: 10px 14px;
@@ -382,7 +507,6 @@ body {
 
 .btn-send:not(:disabled):active { transform: scale(0.94); }
 
-/* Portrait lock hint for accidental landscape */
 @media (orientation: landscape) and (max-height: 500px) {
   body::after {
     content: "Please rotate to portrait";
