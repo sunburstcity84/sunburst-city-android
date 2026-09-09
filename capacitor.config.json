@@ -1,0 +1,11 @@
+{
+  "appId": "city.sunburst.chat",
+  "appName": "Sunburst City",
+  "webDir": "www",
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "allowMixedContent": false
+  }
+}

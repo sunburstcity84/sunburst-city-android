@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#001a4d" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Sunburst City" />
+  <meta name="description" content="Chat with Lila Solano in Sunburst City — tropical-urban AI companion." />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="96x96" href="icons/favicon-96.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="stylesheet" href="css/app.css" />
+  <title>Sunburst City</title>
+</head>
+<body>
+  <!-- Splash -->
+  <section id="screen-splash" class="screen screen--splash" aria-label="Splash">
+    <div class="splash-logo-wrap">
+      <img src="icons/logo.png" alt="Sunburst City" class="splash-logo" width="220" height="220" />
+    </div>
+  </section>
+
+  <!-- Character intro -->
+  <section id="screen-intro" class="screen screen--intro hidden" aria-label="Character intro">
+    <button type="button" class="btn-back" id="intro-back" aria-label="Back">←</button>
+    <div class="intro-card">
+      <div class="intro-avatar" id="intro-avatar" aria-hidden="true">LS</div>
+      <h1 class="intro-name" id="intro-name">Lila Solano</h1>
+      <p class="intro-role" id="intro-role">Local · photographer · beach–city guide</p>
+      <p class="intro-one-liner" id="intro-one-liner"></p>
+      <button type="button" class="btn-primary" id="btn-start">Start chatting</button>
+    </div>
+  </section>
+
+  <!-- Chat -->
+  <section id="screen-chat" class="screen screen--chat hidden" aria-label="Chat">
+    <header class="chat-topbar">
+      <button type="button" class="btn-back btn-back--bar" id="chat-back" aria-label="Back to intro">←</button>
+      <img src="icons/icon-192.png" alt="" class="topbar-logo" width="32" height="32" />
+      <div class="topbar-meta">
+        <span class="topbar-name" id="chat-name">Lila Solano</span>
+        <span class="topbar-status" id="chat-status">Online</span>
+      </div>
+    </header>
+
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+      <div class="empty-state" id="empty-state">
+        <div class="empty-avatar" id="empty-avatar">LS</div>
+        <p class="empty-text">Say hi…</p>
+      </div>
+    </div>
+
+    <div class="typing-bar hidden" id="typing-bar" aria-hidden="true">
+      <span class="typing-dots"><i></i><i></i><i></i></span>
+      <span id="typing-label">Lila is typing…</span>
+    </div>
+
+    <form class="composer" id="composer" autocomplete="off">
+      <label class="sr-only" for="composer-input">Message</label>
+      <textarea
+        id="composer-input"
+        rows="1"
+        placeholder="Message Lila…"
+        enterkeyhint="send"
+        maxlength="2000"
+      ></textarea>
+      <button type="submit" class="btn-send" id="btn-send" disabled aria-label="Send">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path fill="currentColor" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </form>
+  </section>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

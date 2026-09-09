@@ -1,0 +1,15 @@
+node_modules/
+dist/
+www/
+.DS_Store
+*.log
+.idea/
+.vscode/
+android/
+ios/
+.capacitor/
+*.keystore
+*.jks
+local.properties
+.env
+.env.*

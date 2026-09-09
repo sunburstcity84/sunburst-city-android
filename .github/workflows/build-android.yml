@@ -1,0 +1,32 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+      - run: npm install
+      - run: node scripts/prepare-www.cjs
+      - run: bash scripts/ci-cap-sync.sh
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+      - uses: android-actions/setup-android@v3
+      - run: bash scripts/ci-build-apk.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sunburst-city-debug-apk
+          path: android/app/build/outputs/apk/debug/
+          if-no-files-found: error
+          retention-days: 30

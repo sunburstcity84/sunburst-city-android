@@ -1,0 +1,19 @@
+{
+  "name": "sunburst-city-android",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Sunburst City — portrait PWA + Capacitor Android chat app",
+  "scripts": {
+    "cap:sync": "npx cap sync android",
+    "cap:add": "npx cap add android",
+    "build:web": "node scripts/prepare-www.cjs"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^6.2.0"
+  }
+}
