@@ -55,6 +55,22 @@ function faceImg(className) {
   return img;
 }
 
+function mountPresence() {
+  const first = (character?.display_name || "Mika").split(" ")[0];
+  const portrait = portraitSrc();
+  const introStage = $("intro-avatar-stage");
+  const chatStage = $("chat-avatar-stage");
+  if (introStage) {
+    introAvatarFrame = mountAvatar(introStage, { name: first, portrait });
+    setAvatarState(introAvatarFrame, "idle");
+  }
+  if (chatStage) {
+    chatStage.classList.remove("hidden");
+    chatAvatarFrame = mountAvatar(chatStage, { name: first, portrait });
+    setAvatarState(chatAvatarFrame, "idle");
+  }
+}
+
 function fillIntro() {
   const first = character.display_name.split(" ")[0];
   $("intro-name").textContent = character.display_name;
@@ -66,17 +82,7 @@ function fillIntro() {
   $("typing-label").textContent = `${first} is typing…`;
   $("composer-input").placeholder = `Message ${first}…`;
   $("chat-status").textContent = "Online";
-
-  introAvatarFrame = mountAvatar($("intro-avatar-stage"), {
-    name: first,
-    portrait: portraitSrc(),
-  });
-  chatAvatarFrame = mountAvatar($("chat-avatar-stage"), {
-    name: first,
-    portrait: portraitSrc(),
-  });
-  setAvatarState(introAvatarFrame, "idle");
-  setAvatarState(chatAvatarFrame, "idle");
+  mountPresence();
 }
 
 function hideEmpty() {
@@ -215,7 +221,11 @@ function exitApp(ev) {
 function bindUI() {
   $("btn-start").addEventListener("click", () => {
     unlockSpeech();
+    // Remount so Mika’s large portrait is definitely present in chat
+    mountPresence();
     navShow("chat");
+    const stage = $("chat-avatar-stage");
+    if (stage) stage.classList.remove("hidden");
     setAvatarState(chatAvatarFrame, "idle");
     $("composer-input").focus();
   });

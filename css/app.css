@@ -15,7 +15,7 @@
   --text-dark: #152038;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --stage-h: 38%;
+  --stage-h: 42dvh;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -136,9 +136,9 @@ body {
 }
 
 .intro-avatar-stage {
-  width: min(78vw, 280px);
-  height: min(88vw, 340px);
-  max-height: 42vh;
+  width: min(82vw, 300px);
+  height: min(92vw, 360px);
+  max-height: 46vh;
 }
 
 .intro-name {
@@ -246,6 +246,20 @@ body {
   pointer-events: none;
 }
 
+/* Chat stage: large waist-up presence — full portrait visible, fills stage height */
+.chat-avatar-stage .portrait-wrap {
+  width: 100%;
+  height: 100%;
+}
+.chat-avatar-stage .portrait-img {
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: center top;
+  border-radius: 16px;
+}
+
 .intro-avatar-stage .portrait-img {
   border-radius: 20px;
 }
@@ -340,18 +354,22 @@ body {
 }
 
 .chat-avatar-stage {
+  /* Large presence band: waist-up Mika dominates the chat stage */
   flex: 0 0 var(--stage-h);
-  max-height: 42vh;
-  min-height: 140px;
+  height: var(--stage-h);
+  min-height: clamp(180px, 40vh, 320px);
+  max-height: 48vh;
   background:
     radial-gradient(ellipse at 50% 70%, rgba(0, 112, 255, 0.22), transparent 60%),
     linear-gradient(180deg, var(--bg-elevated), var(--bg));
   border-bottom: 1px solid rgba(255,255,255,0.05);
   overflow: hidden;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 4px 8px 0;
+  padding: 6px 10px 2px;
+  position: relative;
+  z-index: 2;
 }
 
 .chat-messages {
