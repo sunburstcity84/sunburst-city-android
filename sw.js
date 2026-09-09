@@ -1,5 +1,5 @@
 /* Sunburst City PWA service worker — cache shell for offline installability */
-const CACHE = "sunburst-v3-mika";
+const CACHE = "sunburst-v4-intro-back";
 const ASSETS = [
   "./",
   "./index.html",

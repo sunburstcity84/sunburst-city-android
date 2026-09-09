@@ -183,20 +183,33 @@ async function sendMessage(text) {
 }
 
 /**
- * Intro ← : confirm then end the PWA session.
- * Do NOT early-return on history.back() — standalone Android often has
- * nowhere to go, which made Back look like a no-op.
+ * Intro ← : confirm then end the PWA session with an explicit left screen.
+ * Never rely on history.back() alone — installed PWAs often have nowhere
+ * to go, which made Back look like a no-op after OK.
  */
-function exitApp() {
+function showLeftScreen() {
+  document.body.innerHTML =
+    '<main style="min-height:100dvh;display:grid;place-items:center;background:#001a4d;color:#f2f6ff;font:600 1.05rem system-ui;text-align:center;padding:24px;gap:10px">' +
+    "<div>You\u2019ve left Sunburst City.</div>" +
+    '<div style="font-weight:500;font-size:0.92rem;opacity:0.85">Close this tab or swipe the app away.</div>' +
+    "</main>";
+}
+
+function exitApp(ev) {
+  if (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
   const ok = window.confirm("Leave Sunburst City?");
   if (!ok) return;
-  stopSpeaking();
+  try {
+    stopSpeaking();
+  } catch (_) {}
   try {
     window.close();
   } catch (_) {}
-  // PWA / tab often can't close — show a calm end state instead of looping
-  document.body.innerHTML =
-    '<div style="min-height:100dvh;display:grid;place-items:center;background:#001a4d;color:#f2f6ff;font:600 1.05rem system-ui;text-align:center;padding:24px">You can close this tab or swipe the app away.</div>';
+  // window.close() is usually blocked in PWAs / tabs — always show left UI.
+  showLeftScreen();
 }
 
 function bindUI() {
@@ -207,7 +220,14 @@ function bindUI() {
     $("composer-input").focus();
   });
 
-  $("intro-back").addEventListener("click", exitApp);
+  // Intro ← — bind the Mika intro back control; stopPropagation in exitApp
+  // keeps this from double-firing with any future delegated handlers.
+  const introBack = $("intro-back");
+  if (!introBack) {
+    console.error("intro-back button missing from Mika intro DOM");
+  } else {
+    introBack.addEventListener("click", exitApp);
+  }
 
   $("chat-back").addEventListener("click", () => {
     stopSpeaking();

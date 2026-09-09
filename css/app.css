@@ -102,14 +102,16 @@ body {
   position: absolute;
   top: calc(var(--safe-top) + 12px);
   left: 12px;
-  width: 40px; height: 40px;
+  width: 44px; height: 44px;
   border: none;
   border-radius: 12px;
   background: rgba(255,255,255,0.08);
   color: var(--text);
   font-size: 1.25rem;
   cursor: pointer;
-  z-index: 5;
+  z-index: 40;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: rgba(255,255,255,0.15);
 }
 
 .btn-back--bar {
@@ -126,6 +128,11 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 12px;
+  /* Let empty card chrome fall through so intro ← stays tappable */
+  pointer-events: none;
+}
+.intro-card > * {
+  pointer-events: auto;
 }
 
 .intro-avatar-stage {
