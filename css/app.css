@@ -536,3 +536,168 @@ body {
     padding: 24px;
   }
 }
+
+/* —— Discreet settings gear —— */
+.btn-gear {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: rgba(255,255,255,0.12);
+}
+.btn-gear:active { color: var(--text); background: rgba(255,255,255,0.06); }
+
+/* —— One-shot Gemini banner —— */
+.gemini-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 112, 255, 0.14);
+  border-bottom: 1px solid rgba(0, 112, 255, 0.28);
+  flex-shrink: 0;
+}
+.gemini-banner-text {
+  font-size: 0.82rem;
+  line-height: 1.35;
+  color: var(--text);
+}
+.gemini-banner-text a {
+  color: var(--gold);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.gemini-banner-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.btn-banner {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--blue);
+  color: #fff;
+}
+.btn-banner--ghost {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid rgba(255,255,255,0.14);
+}
+
+/* —— Settings sheet —— */
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(0, 10, 30, 0.62);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.settings-sheet {
+  width: 100%;
+  background: var(--bg-elevated);
+  border-radius: 18px 18px 0 0;
+  padding: 16px 16px calc(var(--safe-bottom) + 18px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 -12px 40px rgba(0,0,0,0.35);
+  animation: sheetUp 0.22s ease-out;
+}
+@keyframes sheetUp {
+  from { transform: translateY(18px); opacity: 0.7; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.settings-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.settings-head h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.btn-sheet-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.settings-help {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.settings-help a {
+  color: var(--gold);
+}
+.settings-label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.settings-input {
+  width: 100%;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  margin-bottom: 8px;
+}
+.settings-input:focus {
+  border-color: rgba(0, 112, 255, 0.65);
+}
+.settings-status {
+  min-height: 1.2em;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.settings-actions {
+  display: flex;
+  gap: 10px;
+}
+.btn-secondary {
+  flex: 1;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px;
+  padding: 12px 14px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+
+.settings-actions .btn-primary {
+  flex: 1.4;
+  max-width: none;
+  margin-top: 0;
+  border-radius: 14px;
+}

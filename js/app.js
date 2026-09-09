@@ -1,5 +1,14 @@
 import { loadCharacterPack, getCharacter } from "./characters.js";
-import { generateReply } from "./ai.js";
+import {
+  generateReply,
+  hasGeminiKey,
+  isBannerDismissed,
+  dismissBanner,
+  saveGeminiKey,
+  clearGeminiKey,
+  getAiStatus,
+  getMaskedKeyHint,
+} from "./ai.js";
 import { mountAvatar, setAvatarState } from "./avatar.js";
 import {
   initVoice,
@@ -71,6 +80,15 @@ function mountPresence() {
   }
 }
 
+function refreshStatusLine() {
+  const status = $("chat-status");
+  if (!status || busy) return;
+  if (speechSynthesis?.speaking) return;
+  const ai = getAiStatus();
+  status.textContent = ai.startsWith("gemini") ? "Online · Gemini" : "Online";
+  status.title = ai;
+}
+
 function fillIntro() {
   const first = character.display_name.split(" ")[0];
   $("intro-name").textContent = character.display_name;
@@ -81,7 +99,7 @@ function fillIntro() {
   $("chat-name").textContent = character.display_name;
   $("typing-label").textContent = `${first} is typing…`;
   $("composer-input").placeholder = `Message ${first}…`;
-  $("chat-status").textContent = "Online";
+  refreshStatusLine();
   mountPresence();
 }
 
@@ -112,6 +130,7 @@ function setTyping(on) {
   $("typing-bar").classList.toggle("hidden", !on);
   $("typing-bar").setAttribute("aria-hidden", on ? "false" : "true");
   $("chat-status").textContent = on ? "Typing…" : "Online";
+  if (!on) refreshStatusLine();
   if (on) {
     setAvatarState(chatAvatarFrame, "typing");
   } else if (!busy) {
@@ -146,8 +165,91 @@ async function speakReply(text) {
   await speak(text, {
     onEnd: () => {
       setAvatarState(chatAvatarFrame, "idle");
-      if (!busy) $("chat-status").textContent = "Online";
+      if (!busy) refreshStatusLine();
     },
+  });
+}
+
+function syncGeminiBanner() {
+  const banner = $("gemini-banner");
+  if (!banner) return;
+  const show = !hasGeminiKey() && !isBannerDismissed();
+  banner.classList.toggle("hidden", !show);
+}
+
+function openSettings() {
+  const overlay = $("settings-overlay");
+  const input = $("settings-key");
+  const status = $("settings-status");
+  if (!overlay) return;
+  overlay.classList.remove("hidden");
+  overlay.setAttribute("aria-hidden", "false");
+  if (input) {
+    input.value = "";
+    input.placeholder = hasGeminiKey() ? getMaskedKeyHint() || "Key saved — paste to replace" : "AIza…";
+  }
+  if (status) {
+    status.textContent = hasGeminiKey()
+      ? `Saved on this device · ${getAiStatus()}`
+      : "No key yet — chat uses the local engine until you add one.";
+  }
+  setTimeout(() => input?.focus(), 50);
+}
+
+function closeSettings() {
+  const overlay = $("settings-overlay");
+  if (!overlay) return;
+  overlay.classList.add("hidden");
+  overlay.setAttribute("aria-hidden", "true");
+  const input = $("settings-key");
+  if (input) input.value = "";
+}
+
+function bindSettings() {
+  $("btn-settings")?.addEventListener("click", openSettings);
+  $("settings-close")?.addEventListener("click", closeSettings);
+  $("settings-overlay")?.addEventListener("click", (e) => {
+    if (e.target === $("settings-overlay")) closeSettings();
+  });
+
+  $("settings-save")?.addEventListener("click", () => {
+    const raw = $("settings-key")?.value || "";
+    if (!raw.trim()) {
+      if ($("settings-status")) {
+        $("settings-status").textContent = "Paste a key first, or tap Clear.";
+      }
+      return;
+    }
+    saveGeminiKey(raw);
+    dismissBanner();
+    syncGeminiBanner();
+    refreshStatusLine();
+    if ($("settings-status")) {
+      $("settings-status").textContent = "Saved. Mika will use Gemini for replies.";
+    }
+    if ($("settings-key")) $("settings-key").value = "";
+    setTimeout(closeSettings, 450);
+  });
+
+  $("settings-clear")?.addEventListener("click", () => {
+    clearGeminiKey();
+    syncGeminiBanner();
+    refreshStatusLine();
+    if ($("settings-status")) {
+      $("settings-status").textContent = "Cleared. Using local chat engine.";
+    }
+    if ($("settings-key")) {
+      $("settings-key").value = "";
+      $("settings-key").placeholder = "AIza…";
+    }
+  });
+
+  $("banner-add-key")?.addEventListener("click", () => {
+    openSettings();
+  });
+  $("banner-dismiss")?.addEventListener("click", () => {
+    dismissBanner();
+    syncGeminiBanner();
   });
 }
 
@@ -183,7 +285,7 @@ async function sendMessage(text) {
     $("btn-send").disabled = !$("composer-input").value.trim();
     if (!isTtsSupported() || !getAutoSpeak() || !speechSynthesis.speaking) {
       setAvatarState(chatAvatarFrame, "idle");
-      $("chat-status").textContent = "Online";
+      refreshStatusLine();
     }
   }
 }
@@ -214,24 +316,24 @@ function exitApp(ev) {
   try {
     window.close();
   } catch (_) {}
-  // window.close() is usually blocked in PWAs / tabs — always show left UI.
   showLeftScreen();
 }
 
 function bindUI() {
+  bindSettings();
+
   $("btn-start").addEventListener("click", () => {
     unlockSpeech();
-    // Remount so Mika’s large portrait is definitely present in chat
     mountPresence();
     navShow("chat");
     const stage = $("chat-avatar-stage");
     if (stage) stage.classList.remove("hidden");
     setAvatarState(chatAvatarFrame, "idle");
+    syncGeminiBanner();
+    refreshStatusLine();
     $("composer-input").focus();
   });
 
-  // Intro ← — bind the Mika intro back control; stopPropagation in exitApp
-  // keeps this from double-firing with any future delegated handlers.
   const introBack = $("intro-back");
   if (!introBack) {
     console.error("intro-back button missing from Mika intro DOM");
@@ -242,6 +344,7 @@ function bindUI() {
   $("chat-back").addEventListener("click", () => {
     stopSpeaking();
     setAvatarState(chatAvatarFrame, "idle");
+    closeSettings();
     navShow("intro");
     setAvatarState(introAvatarFrame, "idle");
   });
@@ -249,6 +352,7 @@ function bindUI() {
   window.addEventListener("popstate", () => {
     if (!screens.chat.classList.contains("hidden")) {
       stopSpeaking();
+      closeSettings();
       navShow("intro");
     }
   });
@@ -269,7 +373,7 @@ function bindUI() {
       if (!tts.checked) {
         stopSpeaking();
         setAvatarState(chatAvatarFrame, "idle");
-        $("chat-status").textContent = "Online";
+        refreshStatusLine();
       }
     });
   }

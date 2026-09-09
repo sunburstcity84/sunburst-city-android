@@ -1,5 +1,5 @@
 /* Sunburst City PWA service worker — cache shell for offline installability */
-const CACHE = "sunburst-v5-mika-presence-relevance";
+const CACHE = "sunburst-v6-mika-gemini-chat";
 const ASSETS = [
   "./",
   "./index.html",

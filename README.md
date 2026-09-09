@@ -9,7 +9,7 @@ Live: https://sunburstcity84.github.io/sunburst-city-android/
 ## What you get
 
 1. **Character** — Mika from `data/character-pack.json` (Chris’s portrait art)
-2. **Conversation** — portrait text chat
+2. **Conversation** — portrait text chat (Gemini free tier when you add a key; improved local fallback otherwise)
 3. **Animated person** — idle breathe/sway on her portrait; stronger motion while she speaks after you tap **Start chatting**
 
 Mute via the **Speak** checkbox in the chat top bar if needed.
@@ -30,9 +30,19 @@ On the intro screen, **←** asks to leave (confirm exit). From chat, **←** re
 
 Voice quality depends on the Android/Chrome built-in voices (no paid TTS API). Some devices have better female voices than others. If Speak is muted or speech is unsupported, chat still works.
 
-## Chat engine
+## Human-like chat (free Gemini key)
 
-Default: free local in-character mock (no paid API). Optional Gemini/OpenAI key stays on-device only:
+Mika sounds most natural with Google’s **Gemini API free tier**. No credit card needed for the free tier.
+
+1. Open [Google AI Studio → Get API key](https://aistudio.google.com/apikey) and create a key
+2. In the app, tap the **gear** in the chat top bar (or **Add key** on the gentle banner)
+3. Paste the key → **Save**
+
+The key stays in **this device’s** `localStorage` only. Never commit keys to the repo.
+
+Without a key (or if Gemini fails), chat still works on the improved **local** engine.
+
+Optional console override (same storage):
 
 ```
 localStorage.setItem("sc_ai_provider", "gemini");
@@ -40,7 +50,7 @@ localStorage.setItem("sc_ai_api_key", "YOUR_KEY");
 location.reload();
 ```
 
-Never commit keys.
+Optional model override: `localStorage.setItem("sc_ai_model", "gemini-2.5-flash")`.
 
 ## Local preview
 
