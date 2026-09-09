@@ -14,12 +14,22 @@
 
 const HISTORY_LIMIT = 12;
 
+function lsGet(key) {
+  try {
+    if (typeof localStorage !== "undefined") return localStorage.getItem(key);
+  } catch (_) {}
+  return null;
+}
+
 function getConfig() {
-  const w = (typeof window !== "undefined" && window.SUNBURST_AI) || {};
+  const w =
+    (typeof window !== "undefined" && window.SUNBURST_AI) ||
+    (typeof globalThis !== "undefined" && globalThis.SUNBURST_AI) ||
+    {};
   return {
-    provider: w.provider || localStorage.getItem("sc_ai_provider") || "mock",
-    apiKey: w.apiKey || localStorage.getItem("sc_ai_api_key") || "",
-    model: w.model || localStorage.getItem("sc_ai_model") || "",
+    provider: w.provider || lsGet("sc_ai_provider") || "mock",
+    apiKey: w.apiKey || lsGet("sc_ai_api_key") || "",
+    model: w.model || lsGet("sc_ai_model") || "",
   };
 }
 
@@ -32,7 +42,7 @@ function delay(ms) {
 }
 
 /** Heuristic local replies that stay in Lila's voice */
-function mockReply(character, userText, history) {
+function mockReply(character, userText) {
   const t = (userText || "").toLowerCase().trim();
   const name = character.display_name.split(" ")[0];
   const landmarks = [
@@ -52,11 +62,10 @@ function mockReply(character, userText, history) {
     "Mm,",
   ];
 
-  // Topic hooks
   if (/^(hi|hey|hello|yo|sup|hola)\b/.test(t) || t.length < 3) {
-    return pick(character.starter_greetings || [
-      `Hey — ${name} here. What's good?`,
-    ]);
+    return pick(
+      character.starter_greetings || [`Hey — ${name} here. What's good?`]
+    );
   }
 
   if (/photo|shoot|camera|picture|pic/.test(t)) {
@@ -108,7 +117,7 @@ function mockReply(character, userText, history) {
 
   if (/flirt|cute|pretty|beautiful|date|love you|hot/.test(t)) {
     return pick([
-      `Careful — sunsets here already do enough damage. 😄 Keep talking though; I like the energy.`,
+      `Careful — sunsets here already do enough damage. Keep talking though; I like the energy.`,
       `That's sweet. I'll take the compliment and raise you a golden-hour walk. No pressure — just good light.`,
       `Noted, playfully filed. Now tell me something real — beach or downtown first?`,
     ]);
@@ -122,7 +131,6 @@ function mockReply(character, userText, history) {
     ]);
   }
 
-  // Echo-aware generic
   const snippets = userText.trim().slice(0, 40);
   return pick([
     `${pick(openers)} "${snippets}${userText.length > 40 ? "…" : ""}" — that paints a picture. Reminds me of ${pick(landmarks)}. What happened next?`,
@@ -203,7 +211,7 @@ export async function generateReply(character, userText, history) {
   }
 
   await delay(thinkMs);
-  return mockReply(character, userText, history);
+  return mockReply(character, userText);
 }
 
 export function getAiStatus() {

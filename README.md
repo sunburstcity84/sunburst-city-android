@@ -49,3 +49,11 @@ npx --yes serve -l 4173 .
 ## Brand
 
 Electric blue #0070FF, gold accents, deep blue splash. Logo used as icon and splash mark.
+
+## Live URL
+
+https://sunburstcity84.github.io/sunburst-city-android/
+
+## Enable APK CI
+
+Copy files from docs/ci/ into the GitHub Actions workflows directory (needs a token with workflow scope), then run Build Android APK.
